@@ -4,10 +4,9 @@ import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.object.*;
 import eu.hansolo.tilesfx.Tile;
-import eu.hansolo.tilesfx.TileBuilder;
-import eu.hansolo.tilesfx.tools.FlowGridPane;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import jssc.SerialPort;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,15 +17,44 @@ public class Controller implements Initializable, MapComponentInitializedListene
     private GoogleMapView mapView;
 
     @FXML
-    private FlowGridPane pane;
+    private Tile pressureGauge;
 
     @FXML
-    private Tile gauge;
+    private Tile pressureChart;
 
     private GoogleMap map;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        SerialPort serialPort = new SerialPort("/dev/tty.usbmodem1411");
+        try {
+            serialPort.openPort();//Open serial por
+            //serialPort.setParams(9600, 8, 1, 0);//Set params.
+            String buffer="";
+            while (true) {
+                buffer = buffer + serialPort.readString();
+                if(buffer.length()>=1){
+                    if(buffer.charAt(buffer.length()-1)==';'){
+                        System.out.println(buffer);
+                        buffer="";
+                    }
+                }
+
+//                if (buffer != null) {
+//                        System.out.println(buffer.replace("\n",""));
+//                        System.out.println("mayank");
+////                    String dataString  = new String(buffer);
+////                    System.out.println(dataString.replace("\n",""));
+////                    System.out.println(dataString.split(",")[0]);
+////                    for(String data: dataString.split(",")){
+////                        System.out.println(data[0]);
+////                    }
+//                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         mapView.addMapInitializedListener(this);
     }

@@ -4,25 +4,19 @@
 <?import eu.hansolo.tilesfx.Tile?>
 <?import javafx.scene.layout.GridPane?>
 
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
 <GridPane fx:controller="sample.Controller"
           xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/8.0.111"
-          alignment="CENTER">
+          alignment="TOP_LEFT">
 
-    <columnConstraints>
-        <ColumnConstraints prefWidth="150.0"/>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints prefHeight="150.0"/>
-    </rowConstraints>
+    <Tile fx:id="pressureChart" skinType="SPARK_LINE" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
+    <Tile fx:id="pressureGauge" skinType="GAUGE" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
 
-    <Tile fx:id="gauge" skinType="GAUGE" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="1"/>
-    <Tile fx:id="gauge2" skinType="GAUGE" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.rowSpan="1"/>
-    <GoogleMapView fx:id="mapView"
-                   GridPane.columnIndex="1"
-                   GridPane.rowIndex="0"
-                   GridPane.columnSpan="2"
-                    GridPane.rowSpan="2"/>
+    <Tile fx:id="temperatureChart" skinType="SPARK_LINE" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2"/>
+    <Tile fx:id="temperatureGauge" skinType="GAUGE" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+
+    <GoogleMapView fx:id="mapView" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2"/>
+    <Tile fx:id="timeTile" skinType="TIME" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+
+
 </GridPane>
