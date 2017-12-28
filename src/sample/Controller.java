@@ -6,6 +6,8 @@ import com.lynden.gmapsfx.javascript.object.*;
 import eu.hansolo.tilesfx.Tile;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.layout.GridPane;
 import jssc.SerialPort;
 
 import java.net.URL;
@@ -21,6 +23,18 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
     @FXML
     private Tile pressureChart;
+
+    @FXML
+    private Tile temperatureGauge;
+
+    @FXML
+    private Tile temperatureChart;
+
+    @FXML
+    private Tile voltageTile;
+
+    @FXML
+    private GridPane gridPane;
 
     private GoogleMap map;
 
@@ -55,6 +69,18 @@ public class Controller implements Initializable, MapComponentInitializedListene
         }catch (Exception e){
             e.printStackTrace();
         }
+
+        gridPane.setHgap(5); //horizontal gap in pixels => that's what you are asking for
+        gridPane.setVgap(5);
+        gridPane.setPadding(new Insets(10, 10, 10, 10));
+
+        pressureGauge.setTitle("Pressure Gauge");
+        pressureChart.setTitle("Pressure Plot");
+
+        temperatureGauge.setTitle("Temperature Gauge");
+        temperatureChart.setTitle("Temperature Plot");
+
+        voltageTile.setTitle("Voltage Gauge");
 
         mapView.addMapInitializedListener(this);
     }
