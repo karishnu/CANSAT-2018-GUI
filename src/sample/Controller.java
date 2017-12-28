@@ -4,6 +4,7 @@ import com.lynden.gmapsfx.GoogleMapView;
 import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.object.*;
 import eu.hansolo.tilesfx.Tile;
+import eu.hansolo.tilesfx.TileBuilder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -32,6 +33,27 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
     @FXML
     private Tile voltageTile;
+
+    @FXML
+    private Tile timeTile;
+
+    @FXML
+    private Tile logoTile;
+
+    @FXML
+    private Tile gpsTile;
+
+    @FXML
+    private Tile idTile;
+
+    @FXML
+    private Tile packetTile;
+
+    @FXML
+    private Tile altitudeTile;
+
+    @FXML
+    private Tile softwareTile;
 
     @FXML
     private GridPane gridPane;
@@ -81,6 +103,14 @@ public class Controller implements Initializable, MapComponentInitializedListene
         temperatureChart.setTitle("Temperature Plot");
 
         voltageTile.setTitle("Voltage Gauge");
+        timeTile.setTitle("Mission Time");
+        idTile.setTitle("Team ID");
+        gpsTile.setTitle("GPS Data");
+        packetTile.setTitle("Packet Count");
+        altitudeTile.setTitle("Altitude Data");
+        softwareTile.setTitle("Software State");
+
+        idTile.setText("AXXHGS2344");
 
         mapView.addMapInitializedListener(this);
     }
