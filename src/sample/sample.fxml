@@ -6,6 +6,8 @@
 
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <GridPane fx:controller="sample.Controller"
           xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/8.0.111"
@@ -60,8 +62,7 @@
               GridPane.rowIndex="0"
               GridPane.columnIndex="3"/>
 
-        <Tile fx:id="logoTile"
-              skinType="CUSTOM"
+        <HBox fx:id="pictureRegion"
               GridPane.rowIndex="0"
               GridPane.columnIndex="4"/>
 

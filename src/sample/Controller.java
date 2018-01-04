@@ -8,9 +8,13 @@ import eu.hansolo.tilesfx.TileBuilder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import jssc.SerialPort;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -38,7 +42,7 @@ public class Controller implements Initializable, MapComponentInitializedListene
     private Tile timeTile;
 
     @FXML
-    private Tile logoTile;
+    private HBox pictureRegion;
 
     @FXML
     private Tile gpsTile;
@@ -66,15 +70,12 @@ public class Controller implements Initializable, MapComponentInitializedListene
         SerialPort serialPort = new SerialPort("/dev/tty.usbmodem1411");
         try {
             serialPort.openPort();//Open serial por
-            //serialPort.setParams(9600, 8, 1, 0);//Set params.
-            String buffer="";
+            serialPort.setParams(115200, 8, 1, 0);//Set params.
+            String value = "";
             while (true) {
-                buffer = buffer + serialPort.readString();
-                if(buffer.length()>=1){
-                    if(buffer.charAt(buffer.length()-1)==';'){
-                        System.out.println(buffer);
-                        buffer="";
-                    }
+                value = value + serialPort.readString();
+                if(value.length()>=1){
+                    value = Data.divideString(value);
                 }
 
 //                if (buffer != null) {
@@ -111,6 +112,13 @@ public class Controller implements Initializable, MapComponentInitializedListene
         softwareTile.setTitle("Software State");
 
         idTile.setText("AXXHGS2344");
+
+        File file  = new File("src/sample/logo.png");
+        Image image  = new Image(file.toURI().toString());
+        ImageView logoTile = new ImageView();
+        logoTile.setImage(image);
+
+        pictureRegion.getChildren().add(logoTile);
 
         mapView.addMapInitializedListener(this);
     }

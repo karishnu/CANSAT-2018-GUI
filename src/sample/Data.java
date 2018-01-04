@@ -4,9 +4,9 @@ public class Data {
 
     private static String mainDivider = ";";
     private static Character checkDivider = ':';
-    private static String subDivider = "/";
 
     public static String divideString(String input){
+
         String toSend = "";
         String names[] = input.split(mainDivider);
         String returnValue = "";
