@@ -148,18 +148,7 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
         //Data.divideString(";0.0000;0.0000;0.00;0.00;0.00;0;33.49;99156.31;-0.47;-0.89;-27.68:0;1;31;798;0;0;0.0000;0.0000;0.0000;0.0000;0.00;0.00;0.00;0;33.48;99152.25;-0.32;-0.63;-27.10");
 
-        try {
 
-            SerialPort serialPort = new SerialPort("/dev/tty.usbmodem1431");
-            serialPort.openPort();//Open serial port
-            serialPort.setParams(9600, 8, 1, 0);//Set params.
-            while (true) {
-                byte[] buffer = serialPort.readBytes(30);
-                if (buffer != null) {
-                    Data.divideString(new String(buffer));
-                }
-            }
-        }catch (Exception e){e.printStackTrace();}
 
 //        lastTimerCall = System.nanoTime();
 //        timer = new AnimationTimer() {
@@ -255,7 +244,20 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
         map.addMarker( joeSmithMarker );
 
-        timer.start();
+        //timer.start();
+
+        try {
+            SerialPort serialPort = new SerialPort("/dev/tty.usbmodem1411");
+            serialPort.openPort();//Open serial port
+            serialPort.setParams(9600, 8, 1, 0);//Set params.
+            while (true) {
+                byte[] buffer = serialPort.readBytes(30);
+                //System.out.print("\n" + new String(buffer) + "\n");
+                if (buffer != null) {
+                    Data.divideString(new String(buffer));
+                }
+            }
+        }catch (Exception e){e.printStackTrace();}
 
 //        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
 //        infoWindowOptions.content("<h2>Fred Wilkie</h2>"

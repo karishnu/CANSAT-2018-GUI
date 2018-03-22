@@ -1,10 +1,15 @@
 package sample;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class Data {
 
     private static String mainDivider = ":";
     private static String checkDivider = ";";
-    private static int valuesNo = 19;
+    private static int valuesNo = 20;
 
     static String toSend = "";
 
@@ -16,27 +21,18 @@ public class Data {
 
         toSend = toSend + input;
 
-        if (toSend.split(mainDivider).length == 3) {
-            parseString(toSend.split(mainDivider)[1]);
-            toSend = toSend.split(mainDivider)[2];
+        List<String> split_array = new ArrayList<>();
+
+        if (toSend.split(mainDivider).length >= 2) {
+
+            Collections.addAll(split_array, toSend.split(mainDivider));
+
+            parseString(split_array.get(0));
+            split_array.remove(0);
+
+            toSend = String.join(":", split_array);
         }
-//        for(String part: names){
-//            System.out.println(part);
-//
-////            toSend = toSend + part;
-////            if(toSend.charAt(toSend.length()-1) == checkDivider){
-////                String buffer = toSend;
-////                toSend = "";
-////                if(buffer.charAt(0) == checkDivider){
-////                    parseString(buffer);
-////                }
-////            }
-////            else if(toSend.charAt(0) == checkDivider){
-////                returnValue = toSend;
-////            }
-//
-//
-//        }
+
 
         return returnValue;
     }
@@ -45,7 +41,7 @@ public class Data {
 
         String values[] = input.split(checkDivider);
 
-        if (values.length == valuesNo+1) {
+        if (values.length == valuesNo + 1) {
             System.out.print("\n");
             for (String value : values) {
                 System.out.print(value + " ");
