@@ -5,6 +5,9 @@ import com.lynden.gmapsfx.MapComponentInitializedListener;
 import com.lynden.gmapsfx.javascript.object.*;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
+import eu.hansolo.tilesfx.chart.ChartData;
+import javafx.animation.AnimationTimer;
+import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -16,6 +19,7 @@ import jssc.SerialPort;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable, MapComponentInitializedListener {
@@ -62,56 +66,76 @@ public class Controller implements Initializable, MapComponentInitializedListene
     @FXML
     private GridPane gridPane;
 
+    @FXML
+    private Tile yawTile;
+
+    @FXML
+    private Tile pitchTile;
+
+    @FXML
+    private Tile rollTile;
+
     private GoogleMap map;
+
+    private ChartData       chartData1;
+    private ChartData       chartData2;
+    private ChartData       chartData3;
+    private ChartData       chartData4;
+    private ChartData       chartData5;
+    private ChartData       chartData6;
+    private ChartData       chartData7;
+    private ChartData       chartData8;
+
+    private long            lastTimerCall;
+    private AnimationTimer timer;
+    private DoubleProperty value;
+    private static final Random RND = new Random();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        SerialPort serialPort = new SerialPort("/dev/tty.usbmodem1411");
-        try {
-            serialPort.openPort();//Open serial por
-            serialPort.setParams(115200, 8, 1, 0);//Set params.
-            String value = "";
-            while (true) {
-                value = value + serialPort.readString();
-                if(value.length()>=1){
-                    value = Data.divideString(value);
-                }
-
-//                if (buffer != null) {
-//                        System.out.println(buffer.replace("\n",""));
-//                        System.out.println("mayank");
-////                    String dataString  = new String(buffer);
-////                    System.out.println(dataString.replace("\n",""));
-////                    System.out.println(dataString.split(",")[0]);
-////                    for(String data: dataString.split(",")){
-////                        System.out.println(data[0]);
-////                    }
-//                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        // Chart Data
+        chartData1 = new ChartData("Item 1", 24.0, Tile.GREEN);
+        chartData2 = new ChartData("Item 2", 10.0, Tile.BLUE);
+        chartData3 = new ChartData("Item 3", 12.0, Tile.RED);
+        chartData4 = new ChartData("Item 4", 13.0, Tile.YELLOW_ORANGE);
+        chartData5 = new ChartData("Item 5", 13.0, Tile.BLUE);
+        chartData6 = new ChartData("Item 6", 13.0, Tile.BLUE);
+        chartData7 = new ChartData("Item 7", 13.0, Tile.BLUE);
+        chartData8 = new ChartData("Item 8", 13.0, Tile.BLUE);
 
         gridPane.setHgap(5); //horizontal gap in pixels => that's what you are asking for
         gridPane.setVgap(5);
         gridPane.setPadding(new Insets(10, 10, 10, 10));
 
-        pressureGauge.setTitle("Pressure Gauge");
-        pressureChart.setTitle("Pressure Plot");
+        pressureGauge.setTitle("Pressure Gauge (Pa)");
+        pressureChart.setTitle("Pressure Plot (Pa)");
 
-        temperatureGauge.setTitle("Temperature Gauge");
-        temperatureChart.setTitle("Temperature Plot");
+        pressureChart.addChartData(chartData1, chartData2, chartData3, chartData4);
 
-        voltageTile.setTitle("Voltage Gauge");
+        temperatureGauge.setTitle("Temperature Gauge (°C)");
+        temperatureChart.setTitle("Temperature Plot (°C)");
+
+        voltageTile.setTitle("Voltage Gauge (Volts)");
         timeTile.setTitle("Mission Time");
         idTile.setTitle("Team ID");
-        gpsTile.setTitle("GPS Data");
+        gpsTile.setTitle("GPS Data (°deg)");
         packetTile.setTitle("Packet Count");
-        altitudeTile.setTitle("Altitude Data");
+        altitudeTile.setTitle("Altitude Data (metres)");
         softwareTile.setTitle("Software State");
+        yawTile.setTitle("Yaw (°deg)");
+        pitchTile.setTitle("Pitch (°deg)");
+        rollTile.setTitle("Roll (°deg)");
 
-        idTile.setText("AXXHGS2344");
+        gpsTile.setText("12.9713946,79.1530457");
+        packetTile.setText("40");
+        altitudeTile.setText("10");
+        softwareTile.setText("IDLE");
+        yawTile.setText("45");
+        pitchTile.setText("50");
+        rollTile.setText("67");
+
+        idTile.setText("Team 2840");
 
         File file  = new File("src/sample/logo.png");
         Image image  = new Image(file.toURI().toString());
@@ -121,21 +145,98 @@ public class Controller implements Initializable, MapComponentInitializedListene
         pictureRegion.getChildren().add(logoTile);
 
         mapView.addMapInitializedListener(this);
+
+        //Data.divideString(";0.0000;0.0000;0.00;0.00;0.00;0;33.49;99156.31;-0.47;-0.89;-27.68:0;1;31;798;0;0;0.0000;0.0000;0.0000;0.0000;0.00;0.00;0.00;0;33.48;99152.25;-0.32;-0.63;-27.10");
+
+        try {
+
+            SerialPort serialPort = new SerialPort("/dev/tty.usbmodem1431");
+            serialPort.openPort();//Open serial port
+            serialPort.setParams(9600, 8, 1, 0);//Set params.
+            while (true) {
+                byte[] buffer = serialPort.readBytes(30);
+                if (buffer != null) {
+                    Data.divideString(new String(buffer));
+                }
+            }
+        }catch (Exception e){e.printStackTrace();}
+
+//        lastTimerCall = System.nanoTime();
+//        timer = new AnimationTimer() {
+//            @Override public void handle(long now) {
+//                if (now > lastTimerCall + 3_500_000_000L) {
+//                    /*percentageTile.setValue(RND.nextDouble() * percentageTile.getRange() * 1.5 + percentageTile.getMinValue());
+//                    gaugeTile.setValue(RND.nextDouble() * gaugeTile.getRange() * 1.5 + gaugeTile.getMinValue());
+//
+//                    sparkLineTile.setValue(RND.nextDouble() * sparkLineTile.getRange() * 1.5 + sparkLineTile.getMinValue());
+//                    //value.set(RND.nextDouble() * sparkLineTile.getRange() * 1.5 + sparkLineTile.getMinValue());
+//                    //sparkLineTile.setValue(20);
+//
+//                    highLowTile.setValue(RND.nextDouble() * 10);
+//                    series1.getData().forEach(data -> data.setYValue(RND.nextInt(100)));
+//                    series2.getData().forEach(data -> data.setYValue(RND.nextInt(30)));
+//                    series3.getData().forEach(data -> data.setYValue(RND.nextInt(10)));
+//
+//                    chartData1.setValue(RND.nextDouble() * 50);
+//                    chartData2.setValue(RND.nextDouble() * 50);
+//                    chartData3.setValue(RND.nextDouble() * 50);
+//                    chartData4.setValue(RND.nextDouble() * 50);
+//                    chartData5.setValue(RND.nextDouble() * 50);
+//                    chartData6.setValue(RND.nextDouble() * 50);
+//                    chartData7.setValue(RND.nextDouble() * 50);
+//                    chartData8.setValue(RND.nextDouble() * 50);
+//
+//
+//                    barChartTile.getBarChartItems().get(RND.nextInt(3)).setValue(RND.nextDouble() * 80);
+//
+//                    leaderBoardTile.getLeaderBoardItems().get(RND.nextInt(3)).setValue(RND.nextDouble() * 80);
+//
+//                    circularProgressTile.setValue(RND.nextDouble() * 120);
+//
+//                    stockTile.setValue(RND.nextDouble() * 50 + 500);
+//
+//                    gaugeSparkLineTile.setValue(RND.nextDouble() * 100);
+//
+//                    countryTile.setValue(RND.nextDouble() * 100);
+//
+//                    smoothChartData1.setValue(smoothChartData2.getValue());
+//                    smoothChartData2.setValue(smoothChartData3.getValue());
+//                    smoothChartData3.setValue(smoothChartData4.getValue());
+//                    smoothChartData4.setValue(RND.nextDouble() * 25);
+//
+//                    characterTile.setDescription(Helper.ALPHANUMERIC[RND.nextInt(Helper.ALPHANUMERIC.length - 1)]);
+//
+//                    flipTile.setFlipText(Helper.TIME_0_TO_5[RND.nextInt(Helper.TIME_0_TO_5.length - 1)]);
+//
+//                    radialPercentageTile.setValue(chartData1.getValue());*/
+//
+//                    chartData1.setValue(RND.nextDouble() * 50);
+//                    chartData2.setValue(RND.nextDouble() * 50);
+//                    chartData3.setValue(RND.nextDouble() * 50);
+//                    chartData4.setValue(RND.nextDouble() * 50);
+//
+//                    pressureChart.setValue(RND.nextDouble() * 50);
+//                    pressureGauge.setValue(RND.nextDouble() * 50);
+//
+//                    temperatureChart.setValue(RND.nextDouble() * 50);
+//                    temperatureGauge.setValue(RND.nextDouble() * 50);
+//
+//                    voltageTile.setValue(RND.nextDouble() * 50);
+//
+//                    lastTimerCall = now;
+//                }
+//            }
+//        };
     }
 
     @Override
     public void mapInitialized() {
-        LatLong joeSmithLocation = new LatLong(47.6197, -122.3231);
-        LatLong joshAndersonLocation = new LatLong(47.6297, -122.3431);
-        LatLong bobUnderwoodLocation = new LatLong(47.6397, -122.3031);
-        LatLong tomChoiceLocation = new LatLong(47.6497, -122.3325);
-        LatLong fredWilkieLocation = new LatLong(47.6597, -122.3357);
-
+        LatLong joeSmithLocation = new LatLong(12.9713946,79.1530457);
 
         //Set the initial properties of the map.
         MapOptions mapOptions = new MapOptions();
 
-        mapOptions.center(new LatLong(47.6097, -122.3331))
+        mapOptions.center(new LatLong(12.9713946,79.1530457))
                 .overviewMapControl(false)
                 .panControl(false)
                 .rotateControl(false)
@@ -150,29 +251,11 @@ public class Controller implements Initializable, MapComponentInitializedListene
         MarkerOptions markerOptions1 = new MarkerOptions();
         markerOptions1.position(joeSmithLocation);
 
-        MarkerOptions markerOptions2 = new MarkerOptions();
-        markerOptions2.position(joshAndersonLocation);
-
-        MarkerOptions markerOptions3 = new MarkerOptions();
-        markerOptions3.position(bobUnderwoodLocation);
-
-        MarkerOptions markerOptions4 = new MarkerOptions();
-        markerOptions4.position(tomChoiceLocation);
-
-        MarkerOptions markerOptions5 = new MarkerOptions();
-        markerOptions5.position(fredWilkieLocation);
-
         Marker joeSmithMarker = new Marker(markerOptions1);
-        Marker joshAndersonMarker = new Marker(markerOptions2);
-        Marker bobUnderwoodMarker = new Marker(markerOptions3);
-        Marker tomChoiceMarker= new Marker(markerOptions4);
-        Marker fredWilkieMarker = new Marker(markerOptions5);
 
         map.addMarker( joeSmithMarker );
-        map.addMarker( joshAndersonMarker );
-        map.addMarker( bobUnderwoodMarker );
-        map.addMarker( tomChoiceMarker );
-        map.addMarker( fredWilkieMarker );
+
+        timer.start();
 
 //        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
 //        infoWindowOptions.content("<h2>Fred Wilkie</h2>"

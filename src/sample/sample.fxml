@@ -45,11 +45,15 @@
               skinType="TEXT"
               GridPane.rowIndex="3"
               GridPane.columnIndex="2"
-                GridPane.columnSpan="3"/>
+                GridPane.columnSpan="2"/>
+
+        <HBox fx:id="pictureRegion"
+              GridPane.rowIndex="3"
+              GridPane.columnIndex="4"/>
 
         <Tile fx:id="voltageTile"
               skinType="GAUGE"
-              GridPane.rowIndex="1"
+              GridPane.rowIndex="0"
               GridPane.columnIndex="4"/>
 
         <Tile fx:id="timeTile"
@@ -62,8 +66,19 @@
               GridPane.rowIndex="0"
               GridPane.columnIndex="3"/>
 
-        <HBox fx:id="pictureRegion"
-              GridPane.rowIndex="0"
+        <Tile fx:id="yawTile"
+              skinType="TEXT"
+              GridPane.rowIndex="1"
+              GridPane.columnIndex="2"/>
+
+        <Tile fx:id="pitchTile"
+              skinType="TEXT"
+              GridPane.rowIndex="1"
+              GridPane.columnIndex="3"/>
+
+        <Tile fx:id="rollTile"
+              skinType="TEXT"
+              GridPane.rowIndex="1"
               GridPane.columnIndex="4"/>
 
         <Tile fx:id="packetTile"
