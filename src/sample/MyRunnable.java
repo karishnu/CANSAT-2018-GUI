@@ -18,11 +18,13 @@ public class MyRunnable implements Runnable {
             Data.setOnDataEventListener(onDataEventListener);
             while (true) {
                 byte[] buffer = serialPort.readBytes(30);
-                //System.out.print("\n" + new String(buffer) + "\n");
                 if (buffer != null) {
                     Data.divideString(new String(buffer));
                 }
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            onDataEventListener.onFailure();
+            e.printStackTrace();
+        }
     }
 }

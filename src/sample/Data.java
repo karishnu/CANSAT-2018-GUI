@@ -9,7 +9,7 @@ public class Data {
 
     private static String mainDivider = ":";
     private static String checkDivider = ";";
-    private static int valuesNo = 21;
+    private static int valuesNo = 22;
 
     static String toSend = "";
 
@@ -59,5 +59,6 @@ public class Data {
 
     interface OnDataEventListener {
         void onDataReceived(String temperature, String yaw);
+        void onFailure();
     }
 }

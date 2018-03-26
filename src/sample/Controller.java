@@ -268,4 +268,11 @@ public class Controller implements Initializable, MapComponentInitializedListene
         temperatureGauge.setValue(doubleTemp);
         yawTile.setText(yaw);
     }
+
+    @Override
+    public void onFailure() {
+        MyRunnable myRunnable = new MyRunnable(this);
+        Thread t = new Thread(myRunnable);
+        t.start();
+    }
 }
