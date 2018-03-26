@@ -109,6 +109,8 @@ public class Controller implements Initializable, MapComponentInitializedListene
         gridPane.setPadding(new Insets(10, 10, 10, 10));
 
         pressureGauge.setTitle("Pressure Gauge (Pa)");
+        pressureGauge.setMinValue(99000);
+        pressureGauge.setMaxValue(100000);
         pressureChart.setTitle("Pressure Plot (Pa)");
 
         pressureChart.addChartData(chartData1, chartData2, chartData3, chartData4);
@@ -131,9 +133,6 @@ public class Controller implements Initializable, MapComponentInitializedListene
         packetTile.setText("40");
         altitudeTile.setText("10");
         softwareTile.setText("IDLE");
-        yawTile.setText("45");
-        pitchTile.setText("50");
-        rollTile.setText("67");
 
         idTile.setText("Team 2840");
 
@@ -261,12 +260,19 @@ public class Controller implements Initializable, MapComponentInitializedListene
     }
 
     @Override
-    public void onDataReceived(String temp, String yaw) {
+    public void onDataReceived(String temp, String roll, String pitch, String yaw, String pressure) {
 
         Double doubleTemp = Double.parseDouble(temp);
+        Double doublePressure = Double.parseDouble(pressure);
+        Double doubleYaw = Double.parseDouble(yaw);
+        Double doubleRoll = Double.parseDouble(roll);
+        Double doublePitch = Double.parseDouble(pitch);
 
         temperatureGauge.setValue(doubleTemp);
-        yawTile.setText(yaw);
+        yawTile.setValue(doubleYaw);
+        rollTile.setValue(doubleRoll);
+        pitchTile.setValue(doublePitch);
+        pressureGauge.setValue(doublePressure);
     }
 
     @Override

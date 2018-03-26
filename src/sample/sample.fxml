@@ -67,17 +67,17 @@
               GridPane.columnIndex="3"/>
 
         <Tile fx:id="yawTile"
-              skinType="TEXT"
+              skinType="NUMBER"
               GridPane.rowIndex="1"
               GridPane.columnIndex="2"/>
 
         <Tile fx:id="pitchTile"
-              skinType="TEXT"
+              skinType="NUMBER"
               GridPane.rowIndex="1"
               GridPane.columnIndex="3"/>
 
         <Tile fx:id="rollTile"
-              skinType="TEXT"
+              skinType="NUMBER"
               GridPane.rowIndex="1"
               GridPane.columnIndex="4"/>
 
@@ -87,7 +87,7 @@
               GridPane.columnIndex="2"/>
 
         <Tile fx:id="altitudeTile"
-              skinType="TEXT"
+              skinType="NUMBER"
               GridPane.rowIndex="2"
               GridPane.columnIndex="3"/>
 

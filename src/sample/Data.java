@@ -1,7 +1,6 @@
 package sample;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -53,12 +52,12 @@ public class Data {
                 System.out.print(value + " ");
             }
 
-            onDataEventListenerMain.onDataReceived(values[16], values[20]);
+            onDataEventListenerMain.onDataReceived(values[17],values[20], values[21], values[22], values[18]);
         }
     }
 
     interface OnDataEventListener {
-        void onDataReceived(String temperature, String yaw);
+        void onDataReceived(String temperature, String roll, String pitch, String yaw, String pressure);
         void onFailure();
     }
 }
