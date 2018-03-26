@@ -9,9 +9,15 @@ public class Data {
 
     private static String mainDivider = ":";
     private static String checkDivider = ";";
-    private static int valuesNo = 20;
+    private static int valuesNo = 21;
 
     static String toSend = "";
+
+    private static OnDataEventListener onDataEventListenerMain;
+
+    public static void setOnDataEventListener(OnDataEventListener onDataEventListener){
+        onDataEventListenerMain = onDataEventListener;
+    }
 
     public static String divideString(String input) {
 
@@ -46,6 +52,12 @@ public class Data {
             for (String value : values) {
                 System.out.print(value + " ");
             }
+
+            onDataEventListenerMain.onDataReceived(values[16], values[20]);
         }
+    }
+
+    interface OnDataEventListener {
+        void onDataReceived(String temperature, String yaw);
     }
 }

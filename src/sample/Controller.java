@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable, MapComponentInitializedListener {
+public class Controller implements Initializable, MapComponentInitializedListener, Data.OnDataEventListener {
 
     @FXML
     private GoogleMapView mapView;
@@ -220,7 +220,6 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
     @Override
     public void mapInitialized() {
-        LatLong joeSmithLocation = new LatLong(12.9713946,79.1530457);
 
         //Set the initial properties of the map.
         MapOptions mapOptions = new MapOptions();
@@ -237,6 +236,8 @@ public class Controller implements Initializable, MapComponentInitializedListene
         map = mapView.createMap(mapOptions);
 
         //Add markers to the map
+
+        LatLong joeSmithLocation = new LatLong(12.9713946,79.1530457);
         MarkerOptions markerOptions1 = new MarkerOptions();
         markerOptions1.position(joeSmithLocation);
 
@@ -246,18 +247,9 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
         //timer.start();
 
-        try {
-            SerialPort serialPort = new SerialPort("/dev/tty.usbmodem1411");
-            serialPort.openPort();//Open serial port
-            serialPort.setParams(9600, 8, 1, 0);//Set params.
-            while (true) {
-                byte[] buffer = serialPort.readBytes(30);
-                //System.out.print("\n" + new String(buffer) + "\n");
-                if (buffer != null) {
-                    Data.divideString(new String(buffer));
-                }
-            }
-        }catch (Exception e){e.printStackTrace();}
+        MyRunnable myRunnable = new MyRunnable(this);
+        Thread t = new Thread(myRunnable);
+        t.start();
 
 //        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
 //        infoWindowOptions.content("<h2>Fred Wilkie</h2>"
@@ -268,4 +260,12 @@ public class Controller implements Initializable, MapComponentInitializedListene
 //        fredWilkeInfoWindow.open(map, fredWilkieMarker);
     }
 
+    @Override
+    public void onDataReceived(String temp, String yaw) {
+
+        Double doubleTemp = Double.parseDouble(temp);
+
+        temperatureGauge.setValue(doubleTemp);
+        yawTile.setText(yaw);
+    }
 }
