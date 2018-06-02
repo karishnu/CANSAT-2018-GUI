@@ -10,15 +10,20 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
+import javafx.geometry.*;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Box;
+import javafx.scene.shape.Cylinder;
+import javafx.scene.transform.Rotate;
 import jssc.SerialPort;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -77,19 +82,14 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
     private GoogleMap map;
 
-    private ChartData       chartData1;
-    private ChartData       chartData2;
-    private ChartData       chartData3;
-    private ChartData       chartData4;
-    private ChartData       chartData5;
-    private ChartData       chartData6;
-    private ChartData       chartData7;
-    private ChartData       chartData8;
-
-    private long            lastTimerCall;
-    private AnimationTimer timer;
-    private DoubleProperty value;
-    private static final Random RND = new Random();
+    private ChartData chartData1;
+    private ChartData chartData2;
+    private ChartData chartData3;
+    private ChartData chartData4;
+    private ChartData chartData5;
+    private ChartData chartData6;
+    private ChartData chartData7;
+    private ChartData chartData8;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -113,15 +113,13 @@ public class Controller implements Initializable, MapComponentInitializedListene
         pressureGauge.setMaxValue(100000);
         pressureChart.setTitle("Pressure Plot (Pa)");
 
-        pressureChart.addChartData(chartData1, chartData2, chartData3, chartData4);
-
         temperatureGauge.setTitle("Temperature Gauge (°C)");
         temperatureChart.setTitle("Temperature Plot (°C)");
 
         voltageTile.setTitle("Voltage Gauge (Volts)");
         timeTile.setTitle("Mission Time");
         idTile.setTitle("Team ID");
-        gpsTile.setTitle("GPS Data (°deg)");
+        //gpsTile.setTitle("GPS Data (°deg)");
         packetTile.setTitle("Packet Count");
         altitudeTile.setTitle("Altitude Data (metres)");
         softwareTile.setTitle("Software State");
@@ -129,92 +127,22 @@ public class Controller implements Initializable, MapComponentInitializedListene
         pitchTile.setTitle("Pitch (°deg)");
         rollTile.setTitle("Roll (°deg)");
 
-        gpsTile.setText("12.9713946,79.1530457");
-        packetTile.setText("40");
-        altitudeTile.setText("10");
-        softwareTile.setText("IDLE");
+        File file = new File("src/sample/logo.png");
+        Image image = new Image(file.toURI().toString());
+        ImageView logoTile = new ImageView();
+        logoTile.setImage(image);
+        GridPane.setConstraints(logoTile, 3, 0);
+        gridPane.getChildren().add(logoTile);
 
         idTile.setText("Team 2840");
 
-        File file  = new File("src/sample/logo.png");
-        Image image  = new Image(file.toURI().toString());
-        ImageView logoTile = new ImageView();
-        logoTile.setImage(image);
-
-        pictureRegion.getChildren().add(logoTile);
+//        box = new Cylinder(50, 150);
+//        GridPane.setValignment(box, VPos.CENTER);
+//        GridPane.setHalignment(box, HPos.CENTER);
+//        GridPane.setConstraints(box, 2, 2, 2, 2);
+//        gridPane.getChildren().add(box);
 
         mapView.addMapInitializedListener(this);
-
-        //Data.divideString(";0.0000;0.0000;0.00;0.00;0.00;0;33.49;99156.31;-0.47;-0.89;-27.68:0;1;31;798;0;0;0.0000;0.0000;0.0000;0.0000;0.00;0.00;0.00;0;33.48;99152.25;-0.32;-0.63;-27.10");
-
-
-
-//        lastTimerCall = System.nanoTime();
-//        timer = new AnimationTimer() {
-//            @Override public void handle(long now) {
-//                if (now > lastTimerCall + 3_500_000_000L) {
-//                    /*percentageTile.setValue(RND.nextDouble() * percentageTile.getRange() * 1.5 + percentageTile.getMinValue());
-//                    gaugeTile.setValue(RND.nextDouble() * gaugeTile.getRange() * 1.5 + gaugeTile.getMinValue());
-//
-//                    sparkLineTile.setValue(RND.nextDouble() * sparkLineTile.getRange() * 1.5 + sparkLineTile.getMinValue());
-//                    //value.set(RND.nextDouble() * sparkLineTile.getRange() * 1.5 + sparkLineTile.getMinValue());
-//                    //sparkLineTile.setValue(20);
-//
-//                    highLowTile.setValue(RND.nextDouble() * 10);
-//                    series1.getData().forEach(data -> data.setYValue(RND.nextInt(100)));
-//                    series2.getData().forEach(data -> data.setYValue(RND.nextInt(30)));
-//                    series3.getData().forEach(data -> data.setYValue(RND.nextInt(10)));
-//
-//                    chartData1.setValue(RND.nextDouble() * 50);
-//                    chartData2.setValue(RND.nextDouble() * 50);
-//                    chartData3.setValue(RND.nextDouble() * 50);
-//                    chartData4.setValue(RND.nextDouble() * 50);
-//                    chartData5.setValue(RND.nextDouble() * 50);
-//                    chartData6.setValue(RND.nextDouble() * 50);
-//                    chartData7.setValue(RND.nextDouble() * 50);
-//                    chartData8.setValue(RND.nextDouble() * 50);
-//
-//
-//                    barChartTile.getBarChartItems().get(RND.nextInt(3)).setValue(RND.nextDouble() * 80);
-//
-//                    leaderBoardTile.getLeaderBoardItems().get(RND.nextInt(3)).setValue(RND.nextDouble() * 80);
-//
-//                    circularProgressTile.setValue(RND.nextDouble() * 120);
-//
-//                    stockTile.setValue(RND.nextDouble() * 50 + 500);
-//
-//                    gaugeSparkLineTile.setValue(RND.nextDouble() * 100);
-//
-//                    countryTile.setValue(RND.nextDouble() * 100);
-//
-//                    smoothChartData1.setValue(smoothChartData2.getValue());
-//                    smoothChartData2.setValue(smoothChartData3.getValue());
-//                    smoothChartData3.setValue(smoothChartData4.getValue());
-//                    smoothChartData4.setValue(RND.nextDouble() * 25);
-//
-//                    characterTile.setDescription(Helper.ALPHANUMERIC[RND.nextInt(Helper.ALPHANUMERIC.length - 1)]);
-//
-//                    flipTile.setFlipText(Helper.TIME_0_TO_5[RND.nextInt(Helper.TIME_0_TO_5.length - 1)]);
-//
-//                    radialPercentageTile.setValue(chartData1.getValue());*/
-//
-//                    chartData1.setValue(RND.nextDouble() * 50);
-//                    chartData2.setValue(RND.nextDouble() * 50);
-//                    chartData3.setValue(RND.nextDouble() * 50);
-//                    chartData4.setValue(RND.nextDouble() * 50);
-//
-//                    pressureChart.setValue(RND.nextDouble() * 50);
-//                    pressureGauge.setValue(RND.nextDouble() * 50);
-//
-//                    temperatureChart.setValue(RND.nextDouble() * 50);
-//                    temperatureGauge.setValue(RND.nextDouble() * 50);
-//
-//                    voltageTile.setValue(RND.nextDouble() * 50);
-//
-//                    lastTimerCall = now;
-//                }
-//            }
-//        };
     }
 
     @Override
@@ -223,7 +151,7 @@ public class Controller implements Initializable, MapComponentInitializedListene
         //Set the initial properties of the map.
         MapOptions mapOptions = new MapOptions();
 
-        mapOptions.center(new LatLong(12.9713946,79.1530457))
+        mapOptions.center(new LatLong(12.9713946, 79.1530457))
                 .overviewMapControl(false)
                 .panControl(false)
                 .rotateControl(false)
@@ -236,43 +164,61 @@ public class Controller implements Initializable, MapComponentInitializedListene
 
         //Add markers to the map
 
-        LatLong joeSmithLocation = new LatLong(12.9713946,79.1530457);
-        MarkerOptions markerOptions1 = new MarkerOptions();
-        markerOptions1.position(joeSmithLocation);
-
-        Marker joeSmithMarker = new Marker(markerOptions1);
-
-        map.addMarker( joeSmithMarker );
-
-        //timer.start();
+//        LatLong joeSmithLocation = new LatLong(12.9713946, 79.1530457);
+//        MarkerOptions markerOptions1 = new MarkerOptions();
+//        markerOptions1.position(joeSmithLocation);
+//
+//        Marker joeSmithMarker = new Marker(markerOptions1);
+//
+//        map.addMarker(joeSmithMarker);
 
         MyRunnable myRunnable = new MyRunnable(this);
         Thread t = new Thread(myRunnable);
         t.start();
-
-//        InfoWindowOptions infoWindowOptions = new InfoWindowOptions();
-//        infoWindowOptions.content("<h2>Fred Wilkie</h2>"
-//                + "Current Location: Safeway<br>"
-//                + "ETA: 45 minutes" );
-//
-//        InfoWindow fredWilkeInfoWindow = new InfoWindow(infoWindowOptions);
-//        fredWilkeInfoWindow.open(map, fredWilkieMarker);
     }
 
-    @Override
-    public void onDataReceived(String temp, String roll, String pitch, String yaw, String pressure) {
+//    Double xroll = 0.00;
+//    Double xpitch = 0.00;
+//    Double xyaw = 0.00;
+//
+//    Double yroll = 0.00;
+//    Double ypitch = 0.00;
+//    Double yyaw = 0.00;
 
-        Double doubleTemp = Double.parseDouble(temp);
-        Double doublePressure = Double.parseDouble(pressure);
-        Double doubleYaw = Double.parseDouble(yaw);
-        Double doubleRoll = Double.parseDouble(roll);
-        Double doublePitch = Double.parseDouble(pitch);
+
+    @Override
+    public void onDataReceived(HashMap<String, String> hashMap) {
+
+        Double doubleTemp = Double.parseDouble(hashMap.get("temperature"));
+        Double doublePressure = Double.parseDouble(hashMap.get("pressure"));
+        Double doubleYaw = Double.parseDouble(hashMap.get("yaw"));
+        Double doubleRoll = Double.parseDouble(hashMap.get("roll"));
+        Double doublePitch = Double.parseDouble(hashMap.get("pitch"));
+        Integer packetCount = Integer.parseInt(hashMap.get("packets"));
 
         temperatureGauge.setValue(doubleTemp);
+        temperatureChart.setValue(doubleTemp);
         yawTile.setValue(doubleYaw);
         rollTile.setValue(doubleRoll);
         pitchTile.setValue(doublePitch);
         pressureGauge.setValue(doublePressure);
+        pressureChart.setValue(doublePressure);
+        packetTile.setValue(packetCount);
+
+//        yroll = xroll - Double.parseDouble(hashMap.get("roll"));
+//        xroll = Double.parseDouble(hashMap.get("roll"));
+//        ypitch = xpitch - Double.parseDouble(hashMap.get("pitch"));
+//        xpitch = Double.parseDouble(hashMap.get("pitch"));
+//        yyaw = xyaw - Double.parseDouble(hashMap.get("yaw"));
+//        xyaw = Double.parseDouble(hashMap.get("yaw"));
+//
+//        rotateNode(box, ypitch, yyaw, yroll);
+    }
+
+    private void rotateNode(Node n, double x, double y, double z) {
+        n.getTransforms().add(new Rotate(x, 0, 0, 0, Rotate.X_AXIS));
+        n.getTransforms().add(new Rotate(y, 0, 0, 0, Rotate.Y_AXIS));
+        n.getTransforms().add(new Rotate(z, 0, 0, 0, Rotate.Z_AXIS));
     }
 
     @Override

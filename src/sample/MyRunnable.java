@@ -1,10 +1,16 @@
 package sample;
 
 import jssc.SerialPort;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
+
+import java.util.Arrays;
 
 public class MyRunnable implements Runnable {
 
-    Data.OnDataEventListener onDataEventListener;
+    private Data.OnDataEventListener onDataEventListener;
+    private SerialPort serialPort;
+    final private String PORT = "/dev/tty.usbserial-00000000";
 
     public MyRunnable(Data.OnDataEventListener onDataEventListener) {
         this.onDataEventListener = onDataEventListener;
@@ -12,19 +18,46 @@ public class MyRunnable implements Runnable {
 
     public void run() {
         try {
-            SerialPort serialPort = new SerialPort("/dev/tty.usbserial-00000000");
-            serialPort.openPort();//Open serial port
-            serialPort.setParams(9600, 8, 1, 0);//Set params.
+            connect();
             Data.setOnDataEventListener(onDataEventListener);
             while (true) {
-                byte[] buffer = serialPort.readBytes(30);
+                byte[] buffer = serialPort.readBytes(20);
+                //System.out.println(new String(buffer));
                 if (buffer != null) {
                     Data.divideString(new String(buffer));
+                } else {
+                    String[] list = SerialPortList.getPortNames();
+                    boolean exist = Arrays.stream(list).anyMatch(str -> str.trim().equals(PORT));
+                    if (exist) {
+                        System.out.println("serial port connection exists");
+                    } else {
+                        try {
+                            //this port is not listed among the available ports..* need to close the port and release the memory
+                            serialPort.closePort();
+                            System.out.println("closing the port to reconnect");
+                            connect();
+                        } catch (SerialPortException e) {
+                            System.out.println("closing the port failed");
+                        }
+                        System.out.println("serial connection is not ready");
+                    }
                 }
             }
-        }catch (Exception e){
-            onDataEventListener.onFailure();
+        } catch (Exception e) {
             e.printStackTrace();
+            onDataEventListener.onFailure();
+        }
+    }
+
+    private void connect() {
+        try {
+            serialPort = new SerialPort(PORT);
+            if (serialPort.isOpened()) serialPort.closePort();
+            serialPort.openPort();//Open serial port
+            serialPort.setParams(9600, 8, 1, 0);//Set params.
+        } catch (Exception e) {
+            e.printStackTrace();
+            onDataEventListener.onFailure();
         }
     }
 }
