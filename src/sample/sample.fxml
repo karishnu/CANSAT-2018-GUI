@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
 <GridPane fx:controller="sample.Controller"
           xmlns:fx="http://javafx.com/fxml/1"
           xmlns="http://javafx.com/javafx/8.0.111"
@@ -34,11 +35,11 @@
               GridPane.columnIndex="1"
               GridPane.rowIndex="1"/>
 
-        <GoogleMapView fx:id="mapView"
-                       GridPane.columnIndex="0"
-                       GridPane.rowIndex="2"
-                       GridPane.columnSpan="1"
-                       GridPane.rowSpan="2"/>
+        <!--<GoogleMapView fx:id="mapView"-->
+                       <!--GridPane.columnIndex="0"-->
+                       <!--GridPane.rowIndex="2"-->
+                       <!--GridPane.columnSpan="1"-->
+                       <!--GridPane.rowSpan="2"/>-->
 
         <!--<Tile fx:id="gpsTile"-->
         <!--skinType="TEXT"-->
@@ -50,50 +51,82 @@
               GridPane.rowIndex="3"
               GridPane.columnIndex="4"/>
 
+        <Tile fx:id="voltageChart"
+              skinType="SPARK_LINE"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="2"
+              GridPane.columnSpan="1"/>
+
         <Tile fx:id="voltageTile"
               skinType="GAUGE"
-              GridPane.rowIndex="0"
-              GridPane.columnIndex="4"/>
-
-        <Tile fx:id="timeTile"
-              skinType="TIME"
-              GridPane.rowIndex="0"
-              GridPane.columnIndex="2"/>
+              GridPane.rowIndex="2"
+              GridPane.columnIndex="1"/>
 
         <Tile fx:id="idTile"
               skinType="TEXT"
               GridPane.rowIndex="0"
               GridPane.columnIndex="3"/>
 
+        <Tile fx:id="softwareTile"
+              skinType="TEXT"
+              GridPane.rowIndex="0"
+              GridPane.columnIndex="2"/>
+
         <Tile fx:id="yawTile"
-              skinType="NUMBER"
+              skinType="GAUGE"
               GridPane.rowIndex="1"
               GridPane.columnIndex="2"/>
 
         <Tile fx:id="pitchTile"
-              skinType="NUMBER"
+              skinType="GAUGE"
               GridPane.rowIndex="1"
               GridPane.columnIndex="3"/>
 
         <Tile fx:id="rollTile"
-              skinType="NUMBER"
+              skinType="GAUGE"
               GridPane.rowIndex="1"
               GridPane.columnIndex="4"/>
 
         <Tile fx:id="packetTile"
               skinType="TEXT"
               GridPane.rowIndex="0"
-              GridPane.columnIndex="5"/>
+              GridPane.columnIndex="4"
+              GridPane.columnSpan="2"/>
 
         <Tile fx:id="altitudeTile"
               skinType="NUMBER"
               GridPane.rowIndex="1"
               GridPane.columnIndex="5"/>
 
-        <Tile fx:id="softwareTile"
+        <Tile fx:id="timeTile"
               skinType="TEXT"
+              GridPane.rowIndex="3"
+              GridPane.columnIndex="0"/>
+
+        <Tile fx:id="latitudeTile"
+              skinType="NUMBER"
+              GridPane.rowIndex="2"
+              GridPane.columnIndex="2"/>
+
+        <Tile fx:id="longitudeTile"
+              skinType="NUMBER"
+              GridPane.rowIndex="2"
+              GridPane.columnIndex="3"/>
+
+        <Tile fx:id="satsTile"
+              skinType="NUMBER"
               GridPane.rowIndex="2"
               GridPane.columnIndex="4"/>
+
+        <Tile fx:id="altitudeGpsTile"
+              skinType="NUMBER"
+              GridPane.rowIndex="2"
+              GridPane.columnIndex="5"/>
+
+        <Button fx:id="button"
+                GridPane.columnIndex="5"
+                GridPane.rowIndex="3"/>
+
 
     </children>
 

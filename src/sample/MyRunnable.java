@@ -21,7 +21,7 @@ public class MyRunnable implements Runnable {
             connect();
             Data.setOnDataEventListener(onDataEventListener);
             while (true) {
-                byte[] buffer = serialPort.readBytes(20);
+                byte[] buffer = serialPort.readBytes(10);
                 //System.out.println(new String(buffer));
                 if (buffer != null) {
                     Data.divideString(new String(buffer));
@@ -45,19 +45,26 @@ public class MyRunnable implements Runnable {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            onDataEventListener.onFailure();
+            //onDataEventListener.onFailure();
         }
     }
 
     private void connect() {
         try {
             serialPort = new SerialPort(PORT);
-            if (serialPort.isOpened()) serialPort.closePort();
             serialPort.openPort();//Open serial port
             serialPort.setParams(9600, 8, 1, 0);//Set params.
         } catch (Exception e) {
             e.printStackTrace();
-            onDataEventListener.onFailure();
+            System.out.println("Could not open port. Closing it.");
+            try {
+                serialPort.closePort();
+                connect();
+            }
+            catch (Exception e2){
+                e2.printStackTrace();
+                System.out.println("Could not close port.");
+            }
         }
     }
 }
