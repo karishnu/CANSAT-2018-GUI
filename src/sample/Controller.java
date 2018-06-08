@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Controller implements Initializable, Data.OnDataEventListener {
@@ -108,6 +109,7 @@ public class Controller implements Initializable, Data.OnDataEventListener {
     private Double globdoubleTemp = 0.00, globdoublePressure = 0.00, globdoubleYaw = 0.00, globdoubleRoll = 0.00, globlatitude = 0.00;
     private Double globlongitude = 0.00, globvoltage = 0.00, globaltitude = 0.00, globalt_gps = 0.00, globdoublePitch = 0.00, globmissiontime = 0.00;
     private Integer globgpshour = 0, globgpsmin = 0, globgpssecs = 0, globgpssats = 0, globstate = 0;
+    private long missionTime = 0;
 
     //Delimiter used in CSV file
     private static final String COMMA_DELIMITER = ",";
@@ -118,8 +120,13 @@ public class Controller implements Initializable, Data.OnDataEventListener {
     private static final String FILE_HEADER = "team_id,mission_time,packet_count,altitude,pressure,temperature,voltage,gps_time," +
             "gps_lat,gps_long,gps_alt,gps_sats,roll,pitch,yaw,soft_state";
 
+    private long millis_start = 0;
+    private int packets = 0;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+        millis_start = System.currentTimeMillis();
 
         button.setText("Close GUI and Save CSV file.");
         button.setMaxHeight(60);
@@ -155,8 +162,6 @@ public class Controller implements Initializable, Data.OnDataEventListener {
 
         File file = new File("src/sample/logo.png");
         Image image = new Image(file.toURI().toString());
-//        ImageView logoTile = new ImageView();
-//        logoTile.setImage(image);
 
         ImageView imgView = new ImageView(image);
 
@@ -207,6 +212,16 @@ public class Controller implements Initializable, Data.OnDataEventListener {
                 softwareTile.setDescription(getStateText(globstate));
                 timeTile.setValue(globmissiontime);
                 satsTile.setValue(globgpssats);
+                gpsTimeTile.setDescription(getGPSTime(globgpshour, globgpsmin, globgpssecs));
+
+                long current_time = System.currentTimeMillis();
+
+                packets++;
+
+                missionTime = (current_time - millis_start)/1000;
+
+                timeTile.setValue(missionTime);
+                packetTile.setValue(packets);
 
                 writeFile();
             }
@@ -229,7 +244,9 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         try {
             fileWriter.append("2840");
             fileWriter.append(COMMA_DELIMITER);
-            fileWriter.append(String.valueOf(globmissiontime));
+            fileWriter.append(String.valueOf(missionTime));
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(String.valueOf(packets));
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globaltitude));
             fileWriter.append(COMMA_DELIMITER);
@@ -238,6 +255,8 @@ public class Controller implements Initializable, Data.OnDataEventListener {
             fileWriter.append(String.valueOf(globdoubleTemp));
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globvoltage));
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(getGPSTime(globgpshour, globgpsmin, globgpssecs));
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globlatitude));
             fileWriter.append(COMMA_DELIMITER);
@@ -300,8 +319,13 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         t.start();
     }
 
+    private String getGPSTime(int hours, int minutes, int seconds) {
+        DecimalFormat formatter = new DecimalFormat("00");
+        return String.valueOf(formatter.format(hours)) + ":" + String.valueOf(formatter.format(minutes)) + ":" + String.valueOf(formatter.format(seconds));
+    }
+
     private String getStateText(int statevalue) {
-        switch (statevalue){
+        switch (statevalue) {
             case 0:
                 return "IDLE";
             case 1:

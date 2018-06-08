@@ -68,7 +68,7 @@
 
         <Tile fx:id="softwareTile"
               skinType="TEXT"
-              GridPane.rowIndex="0"
+              GridPane.rowIndex="3"
               GridPane.columnIndex="4"/>
 
         <Tile fx:id="yawTile"
@@ -93,7 +93,7 @@
               GridPane.columnIndex="6"/>
 
         <Tile fx:id="packetTile"
-              skinType="TEXT"
+              skinType="NUMBER"
               GridPane.rowIndex="0"
               GridPane.columnIndex="5"
               GridPane.columnSpan="1"/>
@@ -110,8 +110,8 @@
               GridPane.columnIndex="0"/>
 
         <Tile fx:id="gpsTimeTile"
-              skinType="TIME"
-              GridPane.columnSpan="3"
+              skinType="TEXT"
+              GridPane.columnSpan="2"
               GridPane.rowIndex="3"
               GridPane.columnIndex="2"/>
 
