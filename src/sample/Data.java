@@ -23,7 +23,7 @@ public class Data {
 
         List<String> split_array;
 
-        String[] afterSplit = toSend.split(":");
+        String[] afterSplit = toSend.split(mainDivider);
 
         if (afterSplit.length > 2) {
 
@@ -44,6 +44,8 @@ public class Data {
 
     private static void parseString(String input) {
 
+        System.out.println(input);
+
         String values[] = input.split(checkDivider);
 
         ArrayList<String> arrayList = new ArrayList<>(Arrays.asList(values));
@@ -53,25 +55,25 @@ public class Data {
             System.out.print("\n");
 
             HashMap<String, String> hashMap = new HashMap<>();
-            //hashMap.put("team_id", arrayList.get(0));
+            hashMap.put("team_id", arrayList.get(0));
             //hashMap.put("mission_time", arrayList.get(1));
             //hashMap.put("packets", arrayList.get(2));
-            hashMap.put("altitude", arrayList.get(0));
-            hashMap.put("temperature", arrayList.get(1));
+            hashMap.put("altitude", arrayList.get(1));
             hashMap.put("pressure", arrayList.get(2));
-            hashMap.put("voltage", arrayList.get(3));
-            hashMap.put("hour", arrayList.get(4));
-            hashMap.put("minute", arrayList.get(5));
-            hashMap.put("seconds", arrayList.get(6));
-            //hashMap.put("mseconds", arrayList.get(10));
-            hashMap.put("latitude", arrayList.get(7));
-            hashMap.put("longitude", arrayList.get(8));
-            hashMap.put("gps_alt", arrayList.get(9));
-            //hashMap.put("sats", arrayList.get(14));
-            hashMap.put("roll", arrayList.get(10));
-            hashMap.put("pitch", arrayList.get(11));
-            hashMap.put("yaw", arrayList.get(12));
-            hashMap.put("state", arrayList.get(13));
+            hashMap.put("temperature", arrayList.get(3));
+            hashMap.put("voltage", arrayList.get(4));
+            hashMap.put("hour", arrayList.get(5));
+            hashMap.put("minute", arrayList.get(6));
+            hashMap.put("seconds", arrayList.get(7));
+            //hashMap.put("mseconds", arrayList.get(9));
+            hashMap.put("latitude", arrayList.get(8));
+            hashMap.put("longitude", arrayList.get(9));
+            hashMap.put("gps_alt", arrayList.get(10));
+            hashMap.put("sats", arrayList.get(11));
+            hashMap.put("roll", arrayList.get(12));
+            hashMap.put("pitch", arrayList.get(13));
+            hashMap.put("yaw", arrayList.get(14));
+            hashMap.put("state", arrayList.get(15));
 
             printValues(hashMap);
             onDataEventListenerMain.onDataReceived(hashMap);

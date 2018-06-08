@@ -64,9 +64,6 @@ public class Controller implements Initializable, Data.OnDataEventListener {
     private Tile gpsTile;
 
     @FXML
-    private Tile idTile;
-
-    @FXML
     private Tile packetTile;
 
     @FXML
@@ -105,16 +102,12 @@ public class Controller implements Initializable, Data.OnDataEventListener {
     @FXML
     private Button button;
 
-    private ChartData chartData1;
-    private ChartData chartData2;
-    private ChartData chartData3;
-    private ChartData chartData4;
-    private ChartData chartData5;
-    private ChartData chartData6;
-    private ChartData chartData7;
-    private ChartData chartData8;
+    @FXML
+    private Tile gpsTimeTile;
 
-    Double globdoubleTemp, globdoublePressure, globdoubleYaw, globdoubleRoll, globlatitude, globlongitude, globvoltage, globaltitude, globalt_gps, globdoublePitch;
+    private Double globdoubleTemp = 0.00, globdoublePressure = 0.00, globdoubleYaw = 0.00, globdoubleRoll = 0.00, globlatitude = 0.00;
+    private Double globlongitude = 0.00, globvoltage = 0.00, globaltitude = 0.00, globalt_gps = 0.00, globdoublePitch = 0.00, globmissiontime = 0.00;
+    private Integer globgpshour = 0, globgpsmin = 0, globgpssecs = 0, globgpssats = 0, globstate = 0;
 
     //Delimiter used in CSV file
     private static final String COMMA_DELIMITER = ",";
@@ -122,24 +115,15 @@ public class Controller implements Initializable, Data.OnDataEventListener {
 
     FileWriter fileWriter;
 
-    private static final String FILE_HEADER = "altitude,temperature,pressure,voltage,latitude,longitude,gps_alt,roll,pitch,yaw";
+    private static final String FILE_HEADER = "team_id,mission_time,packet_count,altitude,pressure,temperature,voltage,gps_time," +
+            "gps_lat,gps_long,gps_alt,gps_sats,roll,pitch,yaw,soft_state";
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-//        // Chart Data
-//        chartData1 = new ChartData("Item 1", 24.0, Tile.GREEN);
-//        chartData2 = new ChartData("Item 2", 10.0, Tile.BLUE);
-//        chartData3 = new ChartData("Item 3", 12.0, Tile.RED);
-//        chartData4 = new ChartData("Item 4", 13.0, Tile.YELLOW_ORANGE);
-//        chartData5 = new ChartData("Item 5", 13.0, Tile.BLUE);
-//        chartData6 = new ChartData("Item 6", 13.0, Tile.BLUE);
-//        chartData7 = new ChartData("Item 7", 13.0, Tile.BLUE);
-//        chartData8 = new ChartData("Item 8", 13.0, Tile.BLUE);
-
         button.setText("Close GUI and Save CSV file.");
         button.setMaxHeight(60);
-        button.setOnAction(actionEvent ->  {
+        button.setOnAction(actionEvent -> {
             closeFile();
         });
 
@@ -148,8 +132,6 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         gridPane.setPadding(new Insets(10, 10, 10, 10));
 
         pressureGauge.setTitle("Pressure Gauge (Pa)");
-        pressureGauge.setMinValue(99000);
-        pressureGauge.setMaxValue(100000);
         pressureChart.setTitle("Pressure Plot (Pa)");
 
         temperatureGauge.setTitle("Temperature Gauge (°C)");
@@ -157,7 +139,6 @@ public class Controller implements Initializable, Data.OnDataEventListener {
 
         voltageTile.setTitle("Voltage Gauge (Volts)");
         timeTile.setTitle("Mission Time");
-        idTile.setTitle("Team ID");
         //gpsTile.setTitle("GPS Data (°deg)");
         packetTile.setTitle("Packet Count");
         altitudeTile.setTitle("Altitude Data (metres)");
@@ -170,17 +151,28 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         longitudeTile.setTitle("Longitude");
         satsTile.setTitle("Satellites");
         altitudeGpsTile.setTitle("Altitude (GPS)");
+        gpsTimeTile.setTitle("GPS Time");
 
         File file = new File("src/sample/logo.png");
         Image image = new Image(file.toURI().toString());
-        ImageView logoTile = new ImageView();
-        logoTile.setImage(image);
-        GridPane.setConstraints(logoTile, 3, 0);
-        gridPane.getChildren().add(logoTile);
+//        ImageView logoTile = new ImageView();
+//        logoTile.setImage(image);
 
-        idTile.setText("Team 2840");
+        ImageView imgView = new ImageView(image);
 
-        softwareTile.setDescription("ASCENDING");
+        Tile tile = TileBuilder.create()
+                .skinType(Tile.SkinType.CUSTOM)
+                .prefSize(750, 750)
+                .title("TEAM")
+                .text("Team ID - 2840")
+                .textVisible(true)
+                .graphic(imgView)
+                .build();
+
+        GridPane.setConstraints(tile, 4, 0);
+        gridPane.getChildren().add(tile);
+
+        //softwareTile.setDescription("ASCENDING");
         softwareTile.setDescriptionAlignment(Pos.CENTER);
 
         MyRunnable myRunnable = new MyRunnable(this);
@@ -189,6 +181,9 @@ public class Controller implements Initializable, Data.OnDataEventListener {
 
         try {
             fileWriter = new FileWriter("data_file.csv");
+            fileWriter.append(FILE_HEADER);
+            fileWriter.append(NEW_LINE_SEPARATOR);
+
         } catch (Exception e) {
             System.out.println("File could not be opened.");
         }
@@ -209,6 +204,9 @@ public class Controller implements Initializable, Data.OnDataEventListener {
                 longitudeTile.setValue(globlongitude);
                 altitudeTile.setValue(globaltitude);
                 altitudeGpsTile.setValue(globalt_gps);
+                softwareTile.setDescription(getStateText(globstate));
+                timeTile.setValue(globmissiontime);
+                satsTile.setValue(globgpssats);
 
                 writeFile();
             }
@@ -229,11 +227,15 @@ public class Controller implements Initializable, Data.OnDataEventListener {
 
     private void writeFile() {
         try {
+            fileWriter.append("2840");
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(String.valueOf(globmissiontime));
+            fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globaltitude));
             fileWriter.append(COMMA_DELIMITER);
-            fileWriter.append(String.valueOf(globdoubleTemp));
-            fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globdoublePressure));
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(String.valueOf(globdoubleTemp));
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globvoltage));
             fileWriter.append(COMMA_DELIMITER);
@@ -243,12 +245,17 @@ public class Controller implements Initializable, Data.OnDataEventListener {
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globalt_gps));
             fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(String.valueOf(globgpssats));
+            fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globdoubleRoll));
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globdoublePitch));
             fileWriter.append(COMMA_DELIMITER);
             fileWriter.append(String.valueOf(globdoubleYaw));
+            fileWriter.append(COMMA_DELIMITER);
+            fileWriter.append(String.valueOf(globstate));
             fileWriter.append(NEW_LINE_SEPARATOR);
+
         } catch (Exception e) {
             System.out.println("Data not appended to file.");
         }
@@ -258,6 +265,7 @@ public class Controller implements Initializable, Data.OnDataEventListener {
     public void onDataReceived(HashMap<String, String> hashMap) {
 
         try {
+            //globmissiontime = Double.parseDouble(hashMap.get("mission_time"));
             globdoubleTemp = Double.parseDouble(hashMap.get("temperature"));
             globdoublePressure = Double.parseDouble(hashMap.get("pressure"));
             globdoubleYaw = Double.parseDouble(hashMap.get("yaw"));
@@ -269,6 +277,11 @@ public class Controller implements Initializable, Data.OnDataEventListener {
             globvoltage = Double.parseDouble(hashMap.get("voltage"));
             globaltitude = Double.parseDouble(hashMap.get("altitude"));
             globalt_gps = Double.parseDouble(hashMap.get("gps_alt"));
+            globgpshour = Integer.parseInt(hashMap.get("hour"));
+            globgpsmin = Integer.parseInt(hashMap.get("minute"));
+            globgpssecs = Integer.parseInt(hashMap.get("seconds"));
+            globstate = Integer.parseInt(hashMap.get("state"));
+            globgpssats = Integer.parseInt(hashMap.get("sats"));
         } catch (Exception e) {
             System.out.println("Data could not be converted to appropriate format.");
         }
@@ -285,5 +298,22 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         MyRunnable myRunnable = new MyRunnable(this);
         Thread t = new Thread(myRunnable);
         t.start();
+    }
+
+    private String getStateText(int statevalue) {
+        switch (statevalue){
+            case 0:
+                return "IDLE";
+            case 1:
+                return "ASCENDING";
+            case 2:
+                return "DESCENDING";
+            case 3:
+                return "FLAPS DEPLOYED";
+            case 4:
+                return "HEAT SHIELD DEPLOYED";
+            default:
+                return "IDLE";
+        }
     }
 }
