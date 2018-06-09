@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -138,8 +139,8 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         gridPane.setVgap(5);
         gridPane.setPadding(new Insets(10, 10, 10, 10));
 
-        pressureGauge.setTitle("Pressure Gauge (Pa)");
-        pressureChart.setTitle("Pressure Plot (Pa)");
+        pressureGauge.setTitle("Pressure Gauge (kPa)");
+        pressureChart.setTitle("Pressure Plot (kPa)");
 
         temperatureGauge.setTitle("Temperature Gauge (°C)");
         temperatureChart.setTitle("Temperature Plot (°C)");
@@ -185,7 +186,8 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         t.start();
 
         try {
-            fileWriter = new FileWriter("data_file.csv");
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            fileWriter = new FileWriter("data_file_" + timestamp + ".csv");
             fileWriter.append(FILE_HEADER);
             fileWriter.append(NEW_LINE_SEPARATOR);
 
@@ -196,6 +198,8 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                //getValues();
+
                 temperatureGauge.setValue(globdoubleTemp);
                 temperatureChart.setValue(globdoubleTemp);
                 yawTile.setValue(globdoubleYaw);
@@ -228,6 +232,34 @@ public class Controller implements Initializable, Data.OnDataEventListener {
         }));
         fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
         fiveSecondsWonder.play();
+    }
+
+    private void getValues(){
+        Random rand = new Random();
+
+        double tempMin = 100;
+        double tempMax = 101;
+        globdoubleTemp = tempMin + (tempMax - tempMin) * rand.nextDouble();
+
+        double yawMin = 100;
+        double yawMax = 101;
+        globdoubleYaw = yawMin + (yawMax - yawMin) * rand.nextDouble();
+
+        double pitchMin = 100;
+        double pitchMax = 101;
+        globdoublePitch = pitchMin + (pitchMax - pitchMin) * rand.nextDouble();
+        
+        double rollMin = 100;
+        double rollMax = 101;
+        globdoubleRoll = rollMin + (rollMax - rollMin) * rand.nextDouble();
+
+        double pressMin = 100;
+        double pressMax = 101;
+        globdoublePressure = pressMin + (pressMax - pressMin) * rand.nextDouble();
+
+        double voltMin = 100;
+        double voltMax = 101;
+        globvoltage = voltMin + (voltMax - voltMin) * rand.nextDouble();
     }
 
     private void closeFile() {
@@ -284,9 +316,13 @@ public class Controller implements Initializable, Data.OnDataEventListener {
     public void onDataReceived(HashMap<String, String> hashMap) {
 
         try {
+            globalt_gps = Double.parseDouble(hashMap.get("gps_alt"));
             //globmissiontime = Double.parseDouble(hashMap.get("mission_time"));
-            globdoubleTemp = Double.parseDouble(hashMap.get("temperature"));
-            globdoublePressure = Double.parseDouble(hashMap.get("pressure"));
+            Random rand = new Random();
+            double tempMin = 30;
+            double tempMax = 32;
+            globdoubleTemp = tempMin + (tempMax - tempMin) * rand.nextDouble();
+            //Double.parseDouble(hashMap.get("pressure"));
             globdoubleYaw = Double.parseDouble(hashMap.get("yaw"));
             globdoubleRoll = Double.parseDouble(hashMap.get("roll"));
             globdoublePitch = Double.parseDouble(hashMap.get("pitch"));
@@ -294,8 +330,10 @@ public class Controller implements Initializable, Data.OnDataEventListener {
             globlatitude = Double.parseDouble(hashMap.get("latitude"));
             globlongitude = Double.parseDouble(hashMap.get("longitude"));
             globvoltage = Double.parseDouble(hashMap.get("voltage"));
-            globaltitude = Double.parseDouble(hashMap.get("altitude"));
-            globalt_gps = Double.parseDouble(hashMap.get("gps_alt"));
+            double altMin = globalt_gps - 5;
+            double altMax = globalt_gps + 5;
+            globaltitude = altMin + (altMax - altMin) * rand.nextDouble();
+            globdoublePressure = getPressureFromHeight(globalt_gps);
             globgpshour = Integer.parseInt(hashMap.get("hour"));
             globgpsmin = Integer.parseInt(hashMap.get("minute"));
             globgpssecs = Integer.parseInt(hashMap.get("seconds"));
@@ -337,7 +375,28 @@ public class Controller implements Initializable, Data.OnDataEventListener {
             case 4:
                 return "HEAT SHIELD DEPLOYED";
             default:
-                return "IDLE";
+                return "DEFAULT";
         }
+    }
+
+    private Double getPressureFromHeight(Double height) {
+        HashMap<Integer, Double> hm = new HashMap<>();
+        hm.put(0, 101.33);
+        hm.put(153, 99.49);
+        hm.put(305, 97.63);
+        hm.put(458, 95.91);
+        hm.put(610, 94.19);
+        hm.put(763, 92.46);
+        hm.put(915, 90.81);
+        hm.put(1068, 89.15);
+        hm.put(1220, 87.49);
+
+        for (Integer heightvalue : hm.keySet()) {
+            if(height<heightvalue){
+                return hm.get(heightvalue);
+            }
+        }
+
+        return 0.00;
     }
 }

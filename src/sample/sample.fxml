@@ -18,16 +18,16 @@
 
         <Tile fx:id="pressureChart"
               skinType="SPARK_LINE"
-              maxValue="102000"
-              minValue="92800"
+              maxValue="103.00"
+              minValue="92.80"
               GridPane.columnIndex="0"
               GridPane.rowIndex="0"
               GridPane.columnSpan="3"/>
         <Tile fx:id="pressureGauge"
               skinType="GAUGE"
               GridPane.columnIndex="3"
-              maxValue="102000"
-              minValue="92800"
+              maxValue="103.00"
+              minValue="92.80"
               GridPane.rowIndex="0"/>
         <Tile fx:id="temperatureChart"
               skinType="SPARK_LINE"
